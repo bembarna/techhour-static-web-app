@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import './App.css';
+import { getURL } from './EnviromentContext';
 
 function App() {
 
   const [text, setText] = useState("Click me!");
 
   const testTrigger = async () => {
-    let { text } = await( await fetch("api/HttpTrigger")).json();
+    let text  = await (await fetch(getURL()+"HttpTrigger").then()).text()
     setText(text);
   }
 
@@ -22,7 +23,7 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          {text}
         </a>
         <button onClick={() => {testTrigger()}}>{text}</button>
       </header>
