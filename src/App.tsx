@@ -6,7 +6,7 @@ function App() {
   const [text, setText] = useState("Click me!");
 
   const testTrigger = async () => {
-    let { text } = await( await fetch("http://localhost:7071/api/HttpTrigger")).json();
+    let { text } = await( await fetch("api/HttpTrigger")).json();
     setText(text);
   }
 
