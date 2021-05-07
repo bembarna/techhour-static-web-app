@@ -9,7 +9,7 @@ type Message = {
 const prisma = new PrismaClient({
     datasources: {
       db: {
-        url: process.env.connectionString,
+        url: process.env.DATABASE_CONNECTION_STRING,
       },
     },
   });

@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient({
     datasources: {
       db: {
-        url: process.env.connectionString,
+        url: process.env.DATABASE_CONNECTION_STRING,
       },
     },
   });
