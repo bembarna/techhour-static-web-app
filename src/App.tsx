@@ -33,7 +33,11 @@ function App() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const getMessages = async () => {
-    let result  = await (await fetch(getURL()+"GetAllMessages")).json() as Message[];
+    const requestOptions = {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': "*", 'Access-Control-Allow-Headers':"*" },
+  };
+    let result  = await (await fetch(getURL()+"GetAllMessages", requestOptions)).json() as Message[];
     setMessages(result);
     setLoading(false);
   }
