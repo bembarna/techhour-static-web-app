@@ -50,6 +50,7 @@ function App() {
   }
 
   useEffect(() => {
+    console.log(process.env);
     getMessages();
   }, [open, updateOpen]);
 
