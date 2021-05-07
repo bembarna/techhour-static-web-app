@@ -33,10 +33,9 @@ function App() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const getMessages = async () => {
-    let result  = await (await fetch(getURL()+"GetAllMessages")).text() as string;
-    console.log(result)
-    //setMessages(result);
-    setMessages([{name: "test", message: "sad"}]as Message[]);
+    let result  = await (await fetch(getURL()+"GetAllMessages")).json() as Message[];
+    setMessages(result);
+    setLoading(false);
   }
 
   const deleteMessage = async (id: number) => {
