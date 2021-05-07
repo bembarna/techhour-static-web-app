@@ -16,11 +16,13 @@ const prisma = new PrismaClient({
   });
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-    const getMessages = await prisma.message.findMany() as Message[];
+  console.log(prisma);
+
+    //const getMessages = await prisma.message.findMany() as Message[];
 
     context.res = {
         // status: 200, /* Defaults to 200 */
-        body: getMessages
+        body: prisma
     };
 
     
