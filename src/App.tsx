@@ -1,7 +1,7 @@
 import { Formik, Field } from 'formik';
 import React, { useEffect, useState } from 'react';
 import 'semantic-ui-css/semantic.min.css'
-import { Button, Card, Container, Dimmer, Form, Header, Item, List, Loader, Modal, Segment } from 'semantic-ui-react';
+import { Button, Card, Dimmer, Form, Loader, Modal } from 'semantic-ui-react';
 import './App.css';
 import { getURL } from './EnviromentContext';
 
@@ -83,15 +83,14 @@ function App() {
     </Card>
     </>
       )})}
-      <MessageUpdateModal message={selectedMessage || {} as Message} isOpen={updateOpen} setIsOpen={(value: boolean) => isUpdateOpen(value)} setLoading={(value: boolean) => setLoading(value)}></MessageUpdateModal>
-      <MessageModal isOpen={open} setIsOpen={(value: boolean) => isOpen(value)} setLoading={(value: boolean) => setLoading(value)}></MessageModal>
+      <MessageUpdateModalComponent message={selectedMessage || {} as Message} isOpen={updateOpen} setIsOpen={(value: boolean) => isUpdateOpen(value)} setLoading={(value: boolean) => setLoading(value)}></MessageUpdateModalComponent>
+      <MessageModalComponent isOpen={open} setIsOpen={(value: boolean) => isOpen(value)} setLoading={(value: boolean) => setLoading(value)}></MessageModalComponent>
   </Card.Group>
   </div>
   );
 }
 
-const MessageModal = (propss : MessageModal) => {
-
+const MessageModalComponent = (propss : MessageModal) => {
   const createMessage = async (values: Message) => {
     propss.setLoading(true);
     const message = {
@@ -160,7 +159,7 @@ const MessageModal = (propss : MessageModal) => {
   )
 }
 
-const MessageUpdateModal = (propss : MessageUpdateModal) => {
+const MessageUpdateModalComponent = (propss : MessageUpdateModal) => {
 
   const updateMessage = async (values: Message) => {
     propss.setLoading(true);
