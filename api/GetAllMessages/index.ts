@@ -1,7 +1,8 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from "@prisma/client";
 
 type Message = {
+    id: number,
     name: string,
     message: string
 }
@@ -15,19 +16,11 @@ const prisma = new PrismaClient({
   });
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-
-    const createUser = await prisma.message.create({
-        data: {
-          name: req.body.name,
-          message: req.body.message,
-        },
-      })   
-
-    const responseMessage = "Success!"
+    const getMessages = await prisma.message.findMany() as Message[];
 
     context.res = {
         // status: 200, /* Defaults to 200 */
-        body: responseMessage
+        body: getMessages
     };
 
 };

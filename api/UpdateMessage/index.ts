@@ -1,6 +1,7 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import { PrismaClient } from '@prisma/client'
 
+
 type Message = {
     name: string,
     message: string
@@ -15,11 +16,13 @@ const prisma = new PrismaClient({
   });
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-
-    const createUser = await prisma.message.create({
+    const updateUser = await prisma.message.update({
+        where: {
+          id: req.body.id,
+        },
         data: {
-          name: req.body.name,
-          message: req.body.message,
+            name: req.body.name,
+            message: req.body.message,
         },
       })   
 
@@ -29,7 +32,6 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
         // status: 200, /* Defaults to 200 */
         body: responseMessage
     };
-
 };
 
 export default httpTrigger;

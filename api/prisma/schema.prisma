@@ -1,0 +1,34 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["microsoftSqlServer"]
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model BuildVersion {
+  SystemInformationID Int      @id @default(autoincrement()) @db.TinyInt
+  Database_Version    String   @map("Database Version") @db.NVarChar(25)
+  VersionDate         DateTime @db.DateTime
+  ModifiedDate        DateTime @default(now()) @db.DateTime
+}
+
+model ErrorLog {
+  ErrorLogID     Int      @id @default(autoincrement())
+  ErrorTime      DateTime @default(now()) @db.DateTime
+  UserName       String   @db.NVarChar(128)
+  ErrorNumber    Int
+  ErrorSeverity  Int?
+  ErrorState     Int?
+  ErrorProcedure String?  @db.NVarChar(126)
+  ErrorLine      Int?
+  ErrorMessage   String   @db.NVarChar(4000)
+}
+
+model Message {
+  id      Int    @id @default(autoincrement())
+  name    String @db.VarChar(255)
+  message String @db.VarChar(2000)
+}
