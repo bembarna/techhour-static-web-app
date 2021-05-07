@@ -1,30 +1,30 @@
-import { AzureFunction, Context, HttpRequest } from "@azure/functions"
-import { PrismaClient } from "@prisma/client";
+import { AzureFunction, Context, HttpRequest } from '@azure/functions';
+import { PrismaClient } from '@prisma/client';
 
 type Message = {
-    id: number,
-    name: string,
-    message: string
-}
+	id: number;
+	name: string;
+	message: string;
+};
 
 const prisma = new PrismaClient({
-    datasources: {
-      db: {
-        url: process.env.DATABASE_CONNECTION_STRING,
-      },
-    },
-  });
+	datasources: {
+		db: {
+			url: process.env.DATABASE_CONNECTION_STRING,
+		},
+	},
+});
 
-const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
-
-    //const getMessages = await prisma.message.findMany() as Message[];
-
-    context.res = {
-        // status: 200, /* Defaults to 200 */
-        body: "Back"
-    };
-
-    
+const httpTrigger: AzureFunction = async function (
+	context: Context,
+	req: HttpRequest
+): Promise<void> {
+	//const getMessages = await prisma.message.findMany() as Message[];
+	const testob = prisma;
+	context.res = {
+		// status: 200, /* Defaults to 200 */
+		body: testob,
+	};
 };
 
 export default httpTrigger;
