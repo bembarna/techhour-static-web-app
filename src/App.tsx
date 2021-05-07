@@ -42,10 +42,10 @@ function App() {
     setLoading(true);
     const requestOptions = {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(Number(id))
+      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': "*", 'Access-Control-Allow-Headers':"*" },
+      body: JSON.stringify(Number(id)),
   };
-    await (await fetch((getURL()+"DeleteMessage"), requestOptions));
+    await (await fetch((getURL()+"DeleteMessage"), requestOptions ));
     getMessages();
   }
 
