@@ -19,12 +19,21 @@ const httpTrigger: AzureFunction = async function (
 	context: Context,
 	req: HttpRequest
 ): Promise<void> {
-	//const getMessages = await prisma.message.findMany() as Message[];
-	const testob = prisma;
-	context.res = {
-		// status: 200, /* Defaults to 200 */
-		body: testob,
-	};
+	try {
+		prisma.$connect();
+
+		const getMessages = (await prisma.message.findMany()) as Message[];
+
+		context.res = {
+			// status: 200, /* Defaults to 200 */
+			body: getMessages,
+		};
+	} catch (error) {
+		context.res = {
+			// status: 200, /* Defaults to 200 */
+			body: (error as Error).message,
+		};
+	}
 };
 
 export default httpTrigger;
