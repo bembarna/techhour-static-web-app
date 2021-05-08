@@ -1,236 +1,274 @@
 import { Formik, Field } from 'formik';
 import React, { useEffect, useState } from 'react';
-import 'semantic-ui-css/semantic.min.css'
+import 'semantic-ui-css/semantic.min.css';
 import { Button, Card, Dimmer, Form, Loader, Modal } from 'semantic-ui-react';
 import './App.css';
 import { getURL } from './EnviromentContext';
 
 type Message = {
-  id?: number,
-  name: string,
-  message: string
-}
+	id?: number;
+	name: string;
+	message: string;
+};
 
 type MessageModal = {
-  isOpen: boolean,
-  setIsOpen: (value: boolean) => void,
-  setLoading: (value: boolean) => void,
-}
+	isOpen: boolean;
+	setIsOpen: (value: boolean) => void;
+	setLoading: (value: boolean) => void;
+};
 
 type MessageUpdateModal = {
-  isOpen: boolean,
-  setIsOpen: (value: boolean) => void,
-  setLoading: (value: boolean) => void,
-  message: Message
-}
+	isOpen: boolean;
+	setIsOpen: (value: boolean) => void;
+	setLoading: (value: boolean) => void;
+	message: Message;
+};
 
 function App() {
+	const [messages, setMessages] = useState<Message[]>();
+	const [open, isOpen] = useState<boolean>(false);
+	const [updateOpen, isUpdateOpen] = useState<boolean>(false);
+	const [selectedMessage, setSelectedMessage] = useState<Message>();
+	const [loading, setLoading] = useState<boolean>(false);
 
-  const [messages, setMessages] = useState<Message[]>();
-  const [open, isOpen] = useState<boolean>(false);
-  const [updateOpen, isUpdateOpen] = useState<boolean>(false);
-  const [selectedMessage, setSelectedMessage] = useState<Message>();
-  const [loading, setLoading] = useState<boolean>(false);
+	const getMessages = async () => {
+		setLoading(true);
+		const requestOptions = {
+			method: 'GET',
+		};
+		let result = (await (
+			await fetch(getURL() + 'GetAllMessages', requestOptions)
+		).json()) as Message[];
+		setMessages(result);
+		setLoading(false);
+	};
 
-  const getMessages = async () => {
-    const requestOptions = {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': "*", 'Access-Control-Allow-Headers':"*" },
-  };
-    let result  = await (await fetch(getURL()+"GetAllMessages", requestOptions)).json() as Message[];
-    setMessages(result);
-    setLoading(false);
-  }
+	const deleteMessage = async (id: number) => {
+		setLoading(true);
+		const requestOptions = {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Access-Control-Allow-Origin': '*',
+				'Access-Control-Allow-Headers': '*',
+			},
+			body: JSON.stringify(Number(id)),
+		};
+		await await fetch(getURL() + 'DeleteMessage', requestOptions);
+		getMessages();
+	};
 
-  const deleteMessage = async (id: number) => {
-    setLoading(true);
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': "*", 'Access-Control-Allow-Headers':"*" },
-      body: JSON.stringify(Number(id)),
-  };
-    await (await fetch((getURL()+"DeleteMessage"), requestOptions ));
-    getMessages();
-  }
+	useEffect(() => {
+		getMessages();
+	}, [open, updateOpen]);
 
-  useEffect(() => {
-    getMessages();
-  }, [open, updateOpen]);
-
-  return (
-    <div style={{height: "100%", width: "100%"}}>
-      <Dimmer active={loading}>
-        <Loader>Loading</Loader>
-      </Dimmer>
-    <Button disabled={false} style={{marginTop: "150px", marginLeft: "307px", marginRight: "300px", textAlign: "right", padding: "0px"}}><div style={{padding: "15px"}} onClick={() => {isOpen(true)}}>Create Message</div></Button>
-    <Card.Group style={{marginTop: "5px", marginLeft: "300px", marginRight: "300px"}}>
-      {messages?.map((x) => {
-        return(
-          <>
-        <Card>
-      <Card.Content>
-        <Card.Header>{x.name}</Card.Header>
-        <Card.Description>
-          {x.message}
-        </Card.Description>
-      </Card.Content>
-      <Card.Content extra>
-        <div className='ui two buttons'>
-          <Button basic color='green' onClick={() => {isUpdateOpen(true); setSelectedMessage(x);}}>
-            Update
-          </Button>
-          <Button basic color='red' onClick={() => {deleteMessage(x.id || 0);}}>
-            Remove
-          </Button>
-        </div>
-      </Card.Content>
-    </Card>
-    </>
-      )})}
-      <MessageUpdateModalComponent message={selectedMessage || {} as Message} isOpen={updateOpen} setIsOpen={(value: boolean) => isUpdateOpen(value)} setLoading={(value: boolean) => setLoading(value)}></MessageUpdateModalComponent>
-      <MessageModalComponent isOpen={open} setIsOpen={(value: boolean) => isOpen(value)} setLoading={(value: boolean) => setLoading(value)}></MessageModalComponent>
-  </Card.Group>
-  </div>
-  );
+	return (
+		<div style={{ height: '100%', width: '100%' }}>
+			<Dimmer active={loading}>
+				<Loader>Loading</Loader>
+			</Dimmer>
+			<Button
+				disabled={false}
+				style={{
+					marginTop: '150px',
+					marginLeft: '307px',
+					marginRight: '300px',
+					textAlign: 'right',
+					padding: '0px',
+				}}
+			>
+				<div
+					style={{ padding: '15px' }}
+					onClick={() => {
+						isOpen(true);
+					}}
+				>
+					Create Message
+				</div>
+			</Button>
+			<Card.Group
+				style={{ marginTop: '5px', marginLeft: '300px', marginRight: '300px' }}
+			>
+				{messages?.map((x) => {
+					return (
+						<>
+							<Card>
+								<Card.Content>
+									<Card.Header>{x.name}</Card.Header>
+									<Card.Description>{x.message}</Card.Description>
+								</Card.Content>
+								<Card.Content extra>
+									<div className="ui two buttons">
+										<Button
+											basic
+											color="green"
+											onClick={() => {
+												isUpdateOpen(true);
+												setSelectedMessage(x);
+											}}
+										>
+											Update
+										</Button>
+										<Button
+											basic
+											color="red"
+											onClick={() => {
+												deleteMessage(x.id || 0);
+											}}
+										>
+											Remove
+										</Button>
+									</div>
+								</Card.Content>
+							</Card>
+						</>
+					);
+				})}
+				<MessageUpdateModalComponent
+					message={selectedMessage || ({} as Message)}
+					isOpen={updateOpen}
+					setIsOpen={(value: boolean) => isUpdateOpen(value)}
+					setLoading={(value: boolean) => setLoading(value)}
+				></MessageUpdateModalComponent>
+				<MessageModalComponent
+					isOpen={open}
+					setIsOpen={(value: boolean) => isOpen(value)}
+					setLoading={(value: boolean) => setLoading(value)}
+				></MessageModalComponent>
+			</Card.Group>
+		</div>
+	);
 }
 
-const MessageModalComponent = (propss : MessageModal) => {
-  const createMessage = async (values: Message) => {
-    propss.setLoading(true);
-    const message = {
-      name: values.name,
-      message: values.message
-    } as Message;
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(message)
-  };
-    await (await fetch((getURL()+"HttpTrigger"), requestOptions));
-    propss.setIsOpen(false)
-  }
+const MessageModalComponent = (propss: MessageModal) => {
+	const createMessage = async (values: Message) => {
+		const message = {
+			name: values.name,
+			message: values.message,
+		} as Message;
+		const requestOptions = {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(message),
+		};
+		await await fetch(getURL() + 'HttpTrigger', requestOptions);
+		propss.setIsOpen(false);
+		propss.setLoading(true);
+	};
 
-  return(
-  <Modal
-  onClose={() => propss.setIsOpen(true)}
-  open={propss.isOpen}
->
-  <Modal.Header>Create a Message</Modal.Header>
-  <Modal.Content>
-  <Formik
-      initialValues={{
-        name: '',
-        message: ''
-      }}
-      onSubmit={async (values: Message) => {
-        console.log("terst")
-        await createMessage(values);
-      }}
-    >
-      {props => {
-        const {
-          handleSubmit,
-        } = props;
-        return (
-      <Form onSubmit={handleSubmit}>
+	return (
+		<Modal onClose={() => propss.setIsOpen(true)} open={propss.isOpen}>
+			<Modal.Header>Create a Message</Modal.Header>
+			<Modal.Content>
+				<Formik
+					initialValues={{
+						name: '',
+						message: '',
+					}}
+					onSubmit={async (values: Message) => {
+						await createMessage(values);
+					}}
+				>
+					{(props) => {
+						const { handleSubmit } = props;
+						return (
+							<Form onSubmit={handleSubmit}>
+								<label htmlFor="name">Name</label>
+								<Field id="name" name="name" label="message" />
 
-        <label htmlFor="name">Name</label>
-        <Field id="name" name="name" label="message"/>
+								<div style={{ marginTop: '15px', marginBottom: '20px' }}>
+									<label htmlFor="message">Message</label>
+									<Field id="message" name="message" label="message" />
+								</div>
 
-        <div style={{marginTop: "15px", marginBottom: "20px"}}>
-        <label htmlFor="message">Message</label>
-        <Field id="message" name="message" label="message"/>
-        </div>
+								<div style={{ textAlign: 'right' }}>
+									<Button
+										color="black"
+										onClick={() => propss.setIsOpen(false)}
+									>
+										Cancel
+									</Button>
+									<Button
+										content="Create"
+										labelPosition="right"
+										icon="checkmark"
+										positive
+										type="submit"
+									/>
+								</div>
+							</Form>
+						);
+					}}
+				</Formik>
+			</Modal.Content>
+		</Modal>
+	);
+};
 
-          <div style={{textAlign: "right"}}>
-          <Button color='black' onClick={() => propss.setIsOpen(false)}>
-            Cancel
-          </Button>
-          <Button
-            content="Create"
-            labelPosition='right'
-            icon='checkmark'
-            positive
-            type="submit"
-          />
-          </div>
-      </Form>
-        );}}
-    </Formik>
-  </Modal.Content>
-  
-</Modal>
-  )
-}
+const MessageUpdateModalComponent = (propss: MessageUpdateModal) => {
+	const updateMessage = async (values: Message) => {
+		const message = {
+			id: propss.message.id,
+			name: values.name,
+			message: values.message,
+		} as Message;
+		const requestOptions = {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(message),
+		};
+		await await fetch(getURL() + 'UpdateMessage', requestOptions);
+		propss.setIsOpen(false);
+		propss.setLoading(true);
+	};
 
-const MessageUpdateModalComponent = (propss : MessageUpdateModal) => {
+	return (
+		<Modal onClose={() => propss.setIsOpen(true)} open={propss.isOpen}>
+			<Modal.Header>Update a Message</Modal.Header>
+			<Modal.Content>
+				<Formik
+					initialValues={{
+						name: propss.message.name,
+						message: propss.message.message,
+					}}
+					onSubmit={async (values: Message) => {
+						await updateMessage(values);
+					}}
+				>
+					{(props) => {
+						const { handleSubmit } = props;
+						return (
+							<Form onSubmit={handleSubmit}>
+								<label htmlFor="name">Name</label>
+								<Field id="name" name="name" label="message" />
 
-  const updateMessage = async (values: Message) => {
-    propss.setLoading(true);
-    const message = {
-      id: propss.message.id,
-      name: values.name,
-      message: values.message
-    } as Message;
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(message)
-  };
-    await (await fetch((getURL()+"UpdateMessage"), requestOptions));
-    propss.setIsOpen(false)
-  }
+								<div style={{ marginTop: '15px', marginBottom: '20px' }}>
+									<label htmlFor="message">Message</label>
+									<Field id="message" name="message" label="message" />
+								</div>
 
-  return(
-  <Modal
-  onClose={() => propss.setIsOpen(true)}
-  open={propss.isOpen}
->
-  <Modal.Header>Update a Message</Modal.Header>
-  <Modal.Content>
-  <Formik
-      initialValues={{
-        name: propss.message.name,
-        message: propss.message.message
-      }}
-      onSubmit={async (values: Message) => {
-        await updateMessage(values);
-      }}
-    >
-      {props => {
-        const {
-          handleSubmit,
-        } = props;
-        return (
-      <Form onSubmit={handleSubmit}>
-
-        <label htmlFor="name">Name</label>
-        <Field id="name" name="name" label="message"/>
-
-        <div style={{marginTop: "15px", marginBottom: "20px"}}>
-        <label htmlFor="message">Message</label>
-        <Field id="message" name="message" label="message"/>
-        </div>
-
-          <div style={{textAlign: "right"}}>
-          <Button color='black' onClick={() => propss.setIsOpen(false)}>
-            Cancel
-          </Button>
-          <Button
-            content="Update"
-            labelPosition='right'
-            icon='checkmark'
-            positive
-            type="submit"
-          />
-          </div>
-      </Form>
-        );}}
-    </Formik>
-  </Modal.Content>
-  
-</Modal>
-  )
-}
+								<div style={{ textAlign: 'right' }}>
+									<Button
+										color="black"
+										onClick={() => propss.setIsOpen(false)}
+									>
+										Cancel
+									</Button>
+									<Button
+										content="Update"
+										labelPosition="right"
+										icon="checkmark"
+										positive
+										type="submit"
+									/>
+								</div>
+							</Form>
+						);
+					}}
+				</Formik>
+			</Modal.Content>
+		</Modal>
+	);
+};
 
 export default App;
